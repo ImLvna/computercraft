@@ -63,6 +63,11 @@ local handlers = {
   end,
 
 
+  RESTART = function(packet)
+    os.reboot()
+  end,
+
+
   EVAL = function(packet)
     local func, err = loadstring(packet.data.code)
     if not func then

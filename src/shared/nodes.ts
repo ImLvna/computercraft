@@ -71,6 +71,28 @@ export class ccNode extends EventEmitter {
   }
 
   /**
+   * Restart the node
+   */
+  restart(): void {
+    this.send({
+      type: "RESTART",
+      incoming: false,
+      data: {},
+    });
+    this.ws.close();
+    let groups = groupList.get(this.group);
+    groups.splice(groups.indexOf(this), 1);
+    nodeList.delete(this.id);
+  }
+
+  /**
+   * Restart all nodes
+   */
+  static restart(): void {
+    ccNode.getAll().forEach((node) => node.restart());
+  }
+
+  /**
    * Get a node by its ID
    * @param id The ID of the node
    */

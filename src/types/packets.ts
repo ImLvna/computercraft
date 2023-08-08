@@ -93,12 +93,18 @@ export interface evalPacketIncoming extends iIncomingPacket {
   };
 }
 
+export interface restartPacket extends iOutgoingPacket {
+  type: "RESTART";
+  data: {};
+}
+
 export type outgoingPacket =
   | registerPacket
   | heartbeatPacket
   | getDataPacket
   | setDataPacket
-  | evalPacket;
+  | evalPacket
+  | restartPacket;
 export type incomingPacket =
   | registerPacketIncoming
   | heartbeatPacketIncoming
