@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { ccNode } from "../../shared/nodes";
+import { ccNode } from "../../util/nodes";
 import { registerPacket, registerPacketIncoming } from "../../types/packets";
 
 import config from "../../config";

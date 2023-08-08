@@ -1,6 +1,8 @@
 import config from "../../config";
 import { Router } from "express";
 
+import { ccNode } from "../../util/nodes";
+
 const adminRouter = Router();
 
 adminRouter.use((req, res, next) => {
@@ -10,6 +12,11 @@ adminRouter.use((req, res, next) => {
     return;
   }
   next();
+});
+
+adminRouter.post("/packet/:id", (req, res) => {
+  const node = ccNode.get(req.params.id);
+  node.send(req.body);
 });
 
 export default adminRouter;

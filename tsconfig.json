@@ -7,10 +7,6 @@
     "esModuleInterop": true,
     "outDir": "./out",
     "sourceMap": true,
-    "baseUrl": "./src",
-    "paths": {
-      "@routes/*": ["routes/*"],
-      "@shared/*": ["shared/*"]
-    }
+    "baseUrl": "./src"
   }
 }
