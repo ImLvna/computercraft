@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { ccNode } from "../../shared/nodes";
+import { registerPacket, registerPacketIncoming } from "../../types/packets";
 
 const nodeRouter = Router();
 
@@ -15,13 +16,18 @@ nodeRouter.use((req, res, next) => {
 
 nodeRouter.ws("/", (ws, req) => {
   ws.once("message", (msg) => {
-    let packet = JSON.parse(msg.toString());
-    if (packet.type === "REGISTER") {
-      let node = new ccNode(ws, packet.data);
-      ws.on("close", () => {
-        ccNode.delete(node.id);
-      });
-    }
+    let packet: registerPacketIncoming = JSON.parse(msg.toString());
+    let node = new ccNode(ws, packet.data);
+    node.send<registerPacket>({
+      type: "REGISTER",
+      incoming: false,
+      data: {
+        SUCCESS: true,
+      },
+    });
+    ws.on("close", () => {
+      ccNode.delete(node.id);
+    });
   });
 });
 
