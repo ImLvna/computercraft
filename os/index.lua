@@ -13,8 +13,8 @@ config = {
 }
 
 if pocket then config.type = "POCKET"
-else if turtle then config.type = "TURTLE"
-else config.type = "COMPUTER" end end
+elseif turtle then config.type = "TURTLE"
+else config.type = "COMPUTER" end
 
 config.id = os.getComputerID()
 config.name = os.getComputerLabel()
@@ -45,33 +45,26 @@ while true do
                 printError(err)
             else
                 print('WebSocket opened')
+                socket.send(textutils.serialiseJSON({ type = "REGISTER", data = config }))
             end
         until socket
     elseif type == "websocket_message" and url == connectionURL then
         print('Command: ' .. message)
-
-        if message == 'exit()' then
-            socket.close()
-            print('WebSocket closed')
-            break
-        else
-            local response = nil
-            local fn, err = load('return ' .. message)
-            if fn then
-                local success, a, b = pcall(fn)
-                if success then
-                    if a == nil then
-                        a = textutils.json_null
-                    end
-                    response = textutils.serialiseJSON({ a, b })
-                else
-                    response = textutils.serialiseJSON({ textutils.json_null, a })
-                end
+        local packet = textutils.unserialiseJSON(message)
+        
+        if packet.type == "EVAL" then
+            local func, err = loadstring(packet.data)
+            if not func then
+                socket.send(textutils.serialiseJSON({ type = "EVAL", nonce = packet.nonce, data = {success = false, data = err, logs = [err] }}))
             else
-                response = textutils.serialiseJSON({ textutils.json_null, err })
+                local result = { pcall(func) }
+                if not result[1] then
+                    socket.send(textutils.serialiseJSON({ type = "EVAL", nonce = packet.nonce, data = {success = false, data = result[2], logs = [result[2]] }}))
+                else
+                    table.remove(result, 1)
+                    socket.send(textutils.serialiseJSON({ type = "EVAL", nonce = packet.nonce, data = {success = true, data = result, logs = [] }}))
+                end
             end
-            print('Response: ' .. response)
-            socket.send(response)
         end
     end
 end
