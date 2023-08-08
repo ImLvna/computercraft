@@ -5,8 +5,8 @@
       "name": "Launch",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/src/index.ts",
-      "preLaunchTask": "Build"
+      "program": "${workspaceFolder}/src/index.ts"
+      // "preLaunchTask": "Build"
     }
   ]
 }

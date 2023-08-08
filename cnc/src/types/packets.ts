@@ -89,7 +89,6 @@ export interface evalPacketIncoming extends iIncomingPacket {
   type: "EVAL";
   data: {
     success: boolean;
-    logs: string[];
     output: any;
   };
 }

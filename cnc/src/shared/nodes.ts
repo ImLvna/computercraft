@@ -27,8 +27,8 @@ const nodeList = new Map<string, ccNode>();
 const groupList = new Map<group, ccNode[]>();
 
 export declare interface ccNode {
-  on(event: string, listener: (nonce: string, data: any) => void): this;
-  once(event: string, listener: (nonce: string, data: any) => void): this;
+  on(event: string, listener: (packet: incomingPacket) => void): this;
+  once(event: string, listener: (packet: incomingPacket) => void): this;
 }
 export class ccNode extends EventEmitter {
   id: string;
@@ -59,7 +59,7 @@ export class ccNode extends EventEmitter {
 
     this.ws.on("message", (data) => {
       let packet: incomingPacket = JSON.parse(data.toString());
-      this.emit(packet.type, packet.nonce, packet.data);
+      this.emit(packet.type, packet);
     });
 
     nodeList.set(this.id, this);
@@ -149,12 +149,10 @@ export class ccNode extends EventEmitter {
    * @param type The type of packet to wait for
    * @returns A promise that resolves with the nonce and data of the packet
    */
-  async waitForPacket<T extends incomingPacket>(
-    type: T
-  ): Promise<{ nonce: string; data: T }> {
+  async waitForPacket<T extends incomingPacket>(type: T): Promise<T> {
     return new Promise((resolve) => {
-      this.once(type.type, (nonce, data: T) => {
-        resolve({ nonce, data });
+      this.on(type.type, (packet: T) => {
+        resolve(packet);
       });
     });
   }
@@ -172,16 +170,16 @@ export class ccNode extends EventEmitter {
     timeout?: number
   ): Promise<T | null> {
     return new Promise((resolve) => {
+      this.on(type.type, (packet) => {
+        if (packet.nonce === nonce) {
+          resolve(<T>packet);
+        }
+      });
       if (timeout) {
         setTimeout(() => {
           resolve(null);
         }, timeout);
       }
-      this.once(type.type, (incNonce, data) => {
-        if (incNonce === nonce) {
-          resolve(data);
-        }
-      });
     });
   }
 
@@ -189,7 +187,7 @@ export class ccNode extends EventEmitter {
     T extends outgoingPacket,
     U extends incomingPacket
   >(packet: T, type: U, timeout?: number): Promise<U | null> {
-    let nonce = await this.sendAsync(packet);
+    let nonce = this.send(packet);
     return this.waitForPacketWithNonce(type, nonce, timeout);
   }
 
@@ -204,8 +202,10 @@ export class ccNode extends EventEmitter {
   async eval(
     code: string,
     timeout?: number
-  ): Promise<{ output: any; logs: string[]; success: boolean }> {
+  ): Promise<{ output: any; success: boolean }> {
     return new Promise(async (resolve) => {
+      const dummyPacket = <evalPacketIncoming>dummyPacketIncoming;
+      dummyPacket.type = "EVAL";
       const response = await this.sendAndAwaitResponse<
         evalPacket,
         evalPacketIncoming
@@ -220,11 +220,10 @@ export class ccNode extends EventEmitter {
         <evalPacketIncoming>dummyPacketIncoming,
         timeout
       );
-
       if (response) {
         resolve(response.data);
       } else {
-        resolve({ output: null, logs: [], success: false });
+        resolve({ output: null, success: false });
       }
     });
   }

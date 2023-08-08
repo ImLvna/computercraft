@@ -9,6 +9,7 @@ nodeRouter.use((req, res, next) => {
   // Check for auth
   if (req.headers.authorization !== process.env.NODE_PASSWORD) {
     res.status(401).send("Unauthorized");
+    console.log("Unauthorized node connection attempt");
     return;
   }
   next();
