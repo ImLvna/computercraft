@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/index.ts",
+      "env": {
+        "PORT": "8080",
+        "ADMIN_PASSWORD": "asdj8aysdhsaidas",
+        "NODE_PASSWORD": "dsjaudhasiyudgasy7idasgu",
+        "HTTP_URL": "http://localhost",
+        "WS_URL": "ws://localhost"
+      }
+    }
+  ]
+}

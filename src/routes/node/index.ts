@@ -3,11 +3,13 @@ import { Router } from "express";
 import { ccNode } from "../../shared/nodes";
 import { registerPacket, registerPacketIncoming } from "../../types/packets";
 
+import config from "../../config";
+
 const nodeRouter = Router();
 
 nodeRouter.use((req, res, next) => {
   // Check for auth
-  if (req.headers.authorization !== process.env.NODE_PASSWORD) {
+  if (req.headers.authorization !== config.NODE_PASSWORD) {
     res.status(401).send("Unauthorized");
     console.log("Unauthorized node connection attempt");
     return;

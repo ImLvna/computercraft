@@ -1,6 +1,12 @@
 {
+  "scripts": {
+    "start": "node out/index.js",
+    "build": "tsc -p . && yarn copy-files",
+    "watch": "tsc -p . --watch",
+    "copy-files": "copyfiles public/**/* config.json out",
+    "clean": "rm -rf out"
+  },
   "dependencies": {
-    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-ws": "^5.0.2"
   },
@@ -9,6 +15,7 @@
     "@types/express-ws": "^3.0.1",
     "@types/node": "^20.4.8",
     "@types/ws": "^8.5.5",
+    "copyfiles": "^2.4.1",
     "typescript": "^5.1.6"
   }
 }
