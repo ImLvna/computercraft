@@ -57,6 +57,8 @@ export class ccNode extends EventEmitter {
       this.turtleTool = "NONE";
     }
 
+    console.log(`Node ${this.id} connected`);
+
     this.ws.on("message", (data) => {
       let packet: incomingPacket = JSON.parse(data.toString());
       this.emit(packet.type, packet);
@@ -79,10 +81,7 @@ export class ccNode extends EventEmitter {
       incoming: false,
       data: {},
     });
-    this.ws.close();
-    let groups = groupList.get(this.group);
-    groups.splice(groups.indexOf(this), 1);
-    nodeList.delete(this.id);
+    this.delete();
   }
 
   /**
@@ -117,6 +116,8 @@ export class ccNode extends EventEmitter {
     if (node) {
       node.ws.close();
       nodeList.delete(id);
+      let groups = groupList.get(node.group);
+      groups.splice(groups.indexOf(node), 1);
     }
   }
 

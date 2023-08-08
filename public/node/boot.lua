@@ -4,7 +4,7 @@ configFile = fs.open("/config.json", "r")
 config = textutils.unserialiseJSON(configFile.readAll())
 configFile.close()
 
-local initFile = http.get(config.HTTP_URL .. "/node.lua")
+local initFile = http.get(config.HTTP_URL .. "/node/main.lua")
 if not initFile then
   return printError("Failed to download init file!")
 end

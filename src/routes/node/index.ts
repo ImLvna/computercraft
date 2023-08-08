@@ -29,7 +29,7 @@ nodeRouter.ws("/", (ws, req) => {
       },
     });
     ws.on("close", () => {
-      ccNode.delete(node.id);
+      node.delete();
     });
   });
 });
